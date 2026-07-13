@@ -1,0 +1,24 @@
+# Entorno virtual
+venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Modelos
+models/
+
+# Dataset
+dataset/original/
+dataset/processed/
+dataset/embeddings/
+
+# Resultados
+results/
+
+# VS Code
+.vscode/
+
+# Sistema
+.DS_Store
+Thumbs.db
