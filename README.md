@@ -48,6 +48,23 @@ Este proyecto utiliza el dataset **Pokemon TCG All Image Cards** de Kaggle.
 
 El dataset no está incluido en este repositorio.
 
+## Flujo de actualización del dataset
+
+### Primera ejecución
+
+```bash
+python scrips/prepare_dataset.py
+python scrips/create_embeddings.py
+```
+
+### Cuando se agregan nuevos sets
+
+```bash
+python scrips/prepare_dataset.py
+python scrips/update_embeddings.py
+python scrips/check_dataset.py
+```
+
 ## Autor
 
 Sebastián Cisternas
