@@ -1,35 +1,40 @@
 from pathlib import Path
 import shutil
 
-# Ubicacion de las imagenes originales
+# Carpeta donde está el dataset original
 ORIGINAL = Path("../dataset/original")
 
-# Carpeta destino
+# Carpeta donde se copiarán todas las imágenes
 PROCESSED = Path("../dataset/processed")
 
 PROCESSED.mkdir(parents=True, exist_ok=True)
 
-cantidad = 0
+copiadas = 0
+omitidas = 0
 
 for expansion in ORIGINAL.iterdir():
 
     if not expansion.is_dir():
         continue
 
-    nombre_set = expansion.name
-
     for imagen in expansion.iterdir():
 
         if imagen.suffix.lower() not in [".png", ".jpg", ".jpeg"]:
             continue
 
-        nuevo_nombre = f"{nombre_set}_{imagen.name}"
+        nuevo_nombre = f"{expansion.name}_{imagen.name}"
 
-        shutil.copy2(
-            imagen,
-            PROCESSED / nuevo_nombre
-        )
+        destino = PROCESSED / nuevo_nombre
 
-        cantidad += 1
+        if destino.exists():
+            omitidas += 1
+            continue
 
-print(f"Se copiaron {cantidad} imágenes.")
+        shutil.copy2(imagen, destino)
+        copiadas += 1
+
+print("=" * 40)
+print("Preparación del dataset finalizada")
+print("=" * 40)
+print(f"Nuevas imágenes copiadas: {copiadas}")
+print(f"Imágenes ya existentes: {omitidas}")
