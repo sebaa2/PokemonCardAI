@@ -25,11 +25,19 @@ def obtener_info(nombre_archivo):
 
     expansion = partes[0]
 
-    codigo = partes[1]
+    datos = partes[-1]
 
-    pokemon = " ".join(partes[2:]).replace("-", " ").title()
+    datos = datos.replace("-", " ")
 
-    return expansion, codigo, pokemon
+    pokemon = datos.split()[-1]
+
+    codigo = datos.replace(pokemon, "").strip()
+
+    return {
+        "expansion": expansion,
+        "codigo": codigo,
+        "pokemon": pokemon.title()
+    }
 
 
 model = MobileNetV2(
