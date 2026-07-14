@@ -23,21 +23,21 @@ def obtener_info(nombre_archivo):
 
     partes = nombre.split("_")
 
+    if len(partes) < 3:
+        return (
+            "Desconocido",
+            "Desconocido",
+            nombre
+        )
+
     expansion = partes[0]
 
-    datos = partes[-1]
+    codigo = partes[1]
 
-    datos = datos.replace("-", " ")
+    pokemon = " ".join(partes[2:])
+    pokemon = pokemon.replace("-", " ").title()
 
-    pokemon = datos.split()[-1]
-
-    codigo = datos.replace(pokemon, "").strip()
-
-    return {
-        "expansion": expansion,
-        "codigo": codigo,
-        "pokemon": pokemon.title()
-    }
+    return expansion, codigo, pokemon
 
 
 model = MobileNetV2(
@@ -59,51 +59,101 @@ with open(
 
 # -------------------------
 
-foto = "../results/prueba.png"
 
-img = image.load_img(
-    foto,
-    target_size=IMG_SIZE
-)
+def generar_embedding(ruta_imagen):
 
-x = image.img_to_array(img)
+    img = image.load_img(
+        ruta_imagen,
+        target_size=IMG_SIZE
+    )
 
-x = np.expand_dims(x, axis=0)
+    x = image.img_to_array(img)
 
-x = preprocess_input(x)
+    x = np.expand_dims(x, axis=0)
 
-vector = model.predict(x, verbose=0)
+    x = preprocess_input(x)
 
-similaridad = cosine_similarity(
-    vector,
-    embeddings
-)[0]
+    vector = model.predict(
+        x,
+        verbose=0
+    )
+
+    return vector
+
+
+def buscar_cartas(ruta_imagen, cantidad=5):
+
+    vector = generar_embedding(ruta_imagen)
+
+    similitud = cosine_similarity(
+        vector,
+        embeddings
+    )[0]
+
+    indices = np.argsort(similitud)[::-1][:cantidad]
+
+    resultados = []
+
+    for indice in indices:
+
+        expansion, codigo, pokemon = obtener_info(
+            nombres[indice]
+        )
+
+        resultados.append({
+
+            "carta": pokemon,
+
+            "set": expansion,
+
+            "codigo": codigo,
+
+            "similitud": round(
+                similitud[indice]*100,
+                2
+            ),
+
+            "archivo": nombres[indice]
+
+        })
+
+    return resultados
 
 
 # Obtener las 5 mejores coincidencias
-top5 = np.argsort(similaridad)[::-1][:5]
+if __name__ == "__main__":
 
-print("\n========== TOP 5 CARTAS ==========\n")
+    resultados = buscar_cartas(
+        "../results/prueba.png"
+    )
 
-for posicion, indice in enumerate(top5, start=1):
+    print("\n========== TOP 5 CARTAS ==========\n")
 
-    expansion, codigo, pokemon = obtener_info(nombres[indice])
+    for posicion, carta in enumerate(resultados, start=1):
 
-    porcentaje = similaridad[indice] * 100
+        print("="*40)
 
-    print("="*40)
-    print(f"Top {posicion}")
-    print("="*40)
-    print("Carta :", pokemon)
-    print("Set   :", expansion)
-    print("Código:", codigo)
-    print(f"Similitud: {porcentaje:.2f}%")
-    print()
+        print(f"Top {posicion}")
 
-""" indice = np.argmax(similaridad)
+        print("="*40)
 
-print("----------------------")
-print("Carta encontrada")
-print("----------------------")
-print(nombres[indice])
-print(f"Similitud: {similaridad[indice]*100:.2f}%") """
+        print("Carta :", carta["carta"])
+
+        print("Set   :", carta["set"])
+
+        print("Código:", carta["codigo"])
+
+        print(
+            f"Similitud: {carta['similitud']}%"
+        )
+
+        print()
+
+# Bloque de diagnóstico comentado anteriormente
+# indice = np.argmax(similaridad)
+#
+# print("----------------------")
+# print("Carta encontrada")
+# print("----------------------")
+# print(nombres[indice])
+# print(f"Similitud: {similaridad[indice]*100:.2f}%")
