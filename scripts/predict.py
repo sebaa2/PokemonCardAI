@@ -1,26 +1,27 @@
 import json
-import numpy as np
+import sys
+from pathlib import Path
 
+# Permite ejecutar este archivo directamente con `python -m scripts.predict`
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+import numpy as np
 from tensorflow.keras.applications.mobilenet_v2 import (
     MobileNetV2,
     preprocess_input
 )
-
 from tensorflow.keras.preprocessing import image
-
-from pathlib import Path
-
 from sklearn.metrics.pairwise import cosine_similarity
+
+from database.history import guardar_busqueda
 
 IMG_SIZE = (224, 224)
 
-""" revisar el parametro nombre_archivo """
-
 
 def obtener_info(nombre_archivo):
-
     nombre = Path(nombre_archivo).stem
-
     partes = nombre.split("_")
 
     if len(partes) < 3:
@@ -31,7 +32,6 @@ def obtener_info(nombre_archivo):
         )
 
     expansion = partes[0]
-
     codigo = partes[1]
 
     pokemon = " ".join(partes[2:])
@@ -40,45 +40,39 @@ def obtener_info(nombre_archivo):
     return expansion, codigo, pokemon
 
 
+print("Cargando modelo...")
 model = MobileNetV2(
     weights="imagenet",
     include_top=False,
     pooling="avg"
 )
 
+print("Cargando embeddings...")
 embeddings = np.load(
-    "../dataset/embeddings/pokemon_embeddings.npy"
+    PROJECT_ROOT / "dataset" / "embeddings" / "pokemon_embeddings.npy"
 )
 
 with open(
-    "../dataset/embeddings/card_names.json",
+    PROJECT_ROOT / "dataset" / "embeddings" / "card_names.json",
     encoding="utf8"
 ) as f:
-
     nombres = json.load(f)
-
-# -------------------------
 
 
 def generar_embedding(ruta_imagen):
-
     img = image.load_img(
         ruta_imagen,
         target_size=IMG_SIZE
     )
 
     x = image.img_to_array(img)
-
     x = np.expand_dims(x, axis=0)
-
     x = preprocess_input(x)
 
-    vector = model.predict(
+    return model.predict(
         x,
         verbose=0
     )
-
-    return vector
 
 
 def buscar_cartas(ruta_imagen, cantidad=5):
@@ -109,7 +103,7 @@ def buscar_cartas(ruta_imagen, cantidad=5):
             "codigo": codigo,
 
             "similitud": round(
-                similitud[indice]*100,
+                similitud[indice] * 100,
                 2
             ),
 
@@ -120,40 +114,28 @@ def buscar_cartas(ruta_imagen, cantidad=5):
     return resultados
 
 
-# Obtener las 5 mejores coincidencias
 if __name__ == "__main__":
 
-    resultados = buscar_cartas(
-        "../results/prueba.png"
+    imagen = PROJECT_ROOT / "results" / "prueba.png"
+
+    resultados = buscar_cartas(imagen)
+
+    # Guardar únicamente el mejor resultado
+    guardar_busqueda(
+        resultados[0]["carta"],
+        resultados[0]["set"],
+        resultados[0]["similitud"]
     )
 
-    print("\n========== TOP 5 CARTAS ==========\n")
+    print("\n========== TOP 5 ==========\n")
 
-    for posicion, carta in enumerate(resultados, start=1):
+    for i, carta in enumerate(resultados, start=1):
 
-        print("="*40)
-
-        print(f"Top {posicion}")
-
-        print("="*40)
-
-        print("Carta :", carta["carta"])
-
-        print("Set   :", carta["set"])
-
-        print("Código:", carta["codigo"])
-
-        print(
-            f"Similitud: {carta['similitud']}%"
-        )
-
+        print("=" * 40)
+        print(f"Top {i}")
+        print("=" * 40)
+        print(f"Carta     : {carta['carta']}")
+        print(f"Set        : {carta['set']}")
+        print(f"Código     : {carta['codigo']}")
+        print(f"Similitud  : {carta['similitud']}%")
         print()
-
-# Bloque de diagnóstico comentado anteriormente
-# indice = np.argmax(similaridad)
-#
-# print("----------------------")
-# print("Carta encontrada")
-# print("----------------------")
-# print(nombres[indice])
-# print(f"Similitud: {similaridad[indice]*100:.2f}%")
