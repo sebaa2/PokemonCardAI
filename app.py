@@ -2,14 +2,19 @@ from pathlib import Path
 import streamlit as st
 
 from scripts.predict import buscar_cartas
-from database.history import guardar_busqueda
-from database.history import obtener_historial
+from database.history import (
+    guardar_busqueda,
+    obtener_historial
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parent
+
 DATASET = PROJECT_ROOT / "dataset" / "processed"
 
 RESULTS = PROJECT_ROOT / "results"
 RESULTS.mkdir(exist_ok=True)
+
+# --------------------------------------------------------
 
 st.set_page_config(
     page_title="Identificador Pokémon",
@@ -19,14 +24,41 @@ st.set_page_config(
 
 st.title("🎴 Identificador de Cartas Pokémon")
 
-st.write(
-    "Sube una imagen para identificar la carta."
+st.markdown(
+    """
+Identifica cartas Pokémon utilizando **Machine Learning**
+basado en **MobileNetV2** y búsqueda por similitud mediante
+**Embeddings**.
+"""
 )
+
+# --------------------------------------------------------
+# Sidebar
+# --------------------------------------------------------
+
+with st.sidebar:
+
+    st.title("🎴 Pokémon Card AI")
+
+    st.divider()
+
+    st.success("Modelo: MobileNetV2")
+
+    st.success("Método: Cosine Similarity")
+
+    st.info(
+        "Sube una imagen y el sistema buscará "
+        "las cartas más parecidas."
+    )
+
+# --------------------------------------------------------
 
 imagen = st.file_uploader(
     "Selecciona una imagen",
     type=["png", "jpg", "jpeg"]
 )
+
+# --------------------------------------------------------
 
 if imagen:
 
@@ -37,43 +69,161 @@ if imagen:
 
     col1, col2 = st.columns(2)
 
+    # ----------------------------------------------------
+    # Imagen subida
+    # ----------------------------------------------------
+
     with col1:
-        st.subheader("Imagen subida")
-        st.image(imagen, use_container_width=True)
 
-    if st.button("Buscar carta"):
+        st.subheader("📷 Imagen subida")
 
-        with st.spinner("Analizando carta..."):
+        st.image(
+            imagen,
+            width=260
+        )
 
-            resultados = buscar_cartas(ruta_temporal)
+    # ----------------------------------------------------
 
-            guardar_busqueda(
-                resultados[0]["carta"],
-                resultados[0]["set"],
-                resultados[0]["similitud"]
-            )
+    if st.button(
+        "🔍 Buscar carta",
+        use_container_width=True
+    ):
+
+        barra = st.progress(
+            0,
+            text="Preparando imagen..."
+        )
+
+        barra.progress(
+            20,
+            text="Generando características..."
+        )
+
+        resultados = buscar_cartas(
+            ruta_temporal
+        )
+
+        barra.progress(
+            70,
+            text="Buscando coincidencias..."
+        )
+
+        guardar_busqueda(
+            resultados[0]["carta"],
+            resultados[0]["set"],
+            resultados[0]["similitud"]
+        )
+
+        barra.progress(
+            100,
+            text="Proceso finalizado"
+        )
+
+        barra.empty()
+
+        st.success("Carta encontrada correctamente.")
+
+        # ==================================================
+        # Resultado
+        # ==================================================
 
         with col2:
 
-            st.subheader("Resultado")
+            mejor = resultados[0]
 
-            for i, carta in enumerate(resultados, start=1):
-                ruta_imagen = DATASET / carta["archivo"]
+            st.subheader("🏆 Mejor coincidencia")
 
-                st.markdown(f"### {i}. {carta['carta']}")
-
-                if ruta_imagen.exists():
-                    st.image(
-                    str(ruta_imagen),
-                    width=220
+            ruta_imagen = (
+                DATASET /
+                mejor["archivo"]
             )
 
-                st.write(f"**Set:** {carta['set']}")
+            if ruta_imagen.exists():
 
-                st.write(f"**Código:** {carta['codigo']}")
+                st.image(
+                    str(ruta_imagen),
+                    width=180
+                )
 
-                st.write(f"**Similitud:** {carta['similitud']:.2f}%")
+            colA, colB = st.columns(2)
 
-                st.divider()
+            with colA:
 
+                st.metric(
+                    "Similitud",
+                    f"{mejor['similitud']:.2f}%"
+                )
 
+            with colB:
+
+                st.metric(
+                    "Código",
+                    mejor["codigo"]
+                )
+
+            st.write(
+                f"### {mejor['carta']}"
+            )
+
+            st.write(
+                f"**Set:** {mejor['set']}"
+            )
+
+            st.divider()
+
+            st.subheader(
+                "📋 Otras coincidencias"
+            )
+
+            for carta in resultados[1:]:
+
+                with st.container(border=True):
+
+                    c1, c2 = st.columns([3, 1])
+
+                    with c1:
+
+                        st.write(
+                            f"**{carta['carta']}**"
+                        )
+
+                        st.caption(
+                            f"Set: {carta['set']}"
+                        )
+
+                        st.caption(
+                            f"Código: {carta['codigo']}"
+                        )
+
+                    with c2:
+
+                        st.metric(
+                            "Match",
+                            f"{carta['similitud']:.2f}%"
+                        )
+
+        # ==================================================
+        # Historial
+        # ==================================================
+
+        st.divider()
+
+        st.subheader(
+            "📜 Historial de búsquedas"
+        )
+
+        historial = obtener_historial()
+
+        if historial:
+
+            st.dataframe(
+                historial,
+                use_container_width=True,
+                hide_index=True
+            )
+
+        else:
+
+            st.info(
+                "Todavía no existen búsquedas."
+            )
