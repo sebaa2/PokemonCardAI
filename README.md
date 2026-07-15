@@ -191,8 +191,6 @@ python scripts/check_dataset.py
 
 ---
 
-# 👨‍💻 Autor
+# Autor
 
 **Sebastián Cisternas**
-
-Proyecto desarrollado como parte de la carrera de **Ingeniería en Informática**.
