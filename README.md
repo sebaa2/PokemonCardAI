@@ -6,6 +6,10 @@ La aplicación cuenta con una interfaz web desarrollada con **Streamlit**, permi
 
 ---
 
+## ⚠️ Aviso
+
+Este proyecto utiliza un dataset de cartas Pokémon obtenido desde Kaggle. Las imágenes y marcas comerciales pertenecen a sus respectivos propietarios y se utilizan únicamente con fines educativos y de investigación.
+
 ## 📌 Características
 
 - 🎴 Identificación automática de cartas Pokémon.
