@@ -1,0 +1,451 @@
+/* ===========================================
+   Pokemon Card AI
+   Dark Theme
+   =========================================== */
+
+
+/* Fuente general */
+
+html,
+body,
+[class*="css"] {
+
+    font-family: "Segoe UI", sans-serif;
+
+}
+
+
+/* Fondo principal */
+
+.stApp {
+
+    background-color: #0e1117;
+
+}
+
+
+/* Espaciado */
+
+.block-container {
+
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+
+}
+
+
+/* ===========================================
+   TITULOS
+   =========================================== */
+
+h1 {
+
+    color: white;
+    font-weight: 700;
+
+}
+
+h2 {
+
+    color: #FFCB05;
+    font-weight: 600;
+
+}
+
+h3 {
+
+    color: white;
+
+}
+
+
+/* Descripción */
+
+p {
+
+    color: #c9d1d9;
+
+}
+
+
+/* ===========================================
+   METRICS
+   =========================================== */
+
+div[data-testid="stMetric"]{
+
+    background:#161b22;
+
+    border:1px solid #30363d;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    box-shadow:0px 5px 15px rgba(0,0,0,.35);
+
+    transition:0.25s;
+
+}
+
+div[data-testid="stMetric"]:hover{
+
+    border-color:#FFCB05;
+
+    transform:translateY(-2px);
+
+}
+
+
+div[data-testid="stMetricLabel"]{
+
+    color:#8b949e;
+
+    font-weight:bold;
+
+}
+
+
+div[data-testid="stMetricValue"]{
+
+    color:#FFCB05;
+
+    font-size:32px;
+
+    font-weight:700;
+
+}
+
+
+/* ===========================================
+   BOTONES
+   =========================================== */
+
+.stButton>button{
+
+    width:100%;
+
+    background:#FFCB05;
+
+    color:black;
+
+    border:none;
+
+    border-radius:10px;
+
+    font-weight:bold;
+
+    transition:0.3s;
+
+}
+
+.stButton>button:hover{
+
+    background:#f7b500;
+
+    color:black;
+
+}
+
+
+/* ===========================================
+   FILE UPLOADER
+   =========================================== */
+
+section[data-testid="stFileUploader"]{
+
+    background:#161b22;
+
+    border-radius:15px;
+
+    border:1px solid #30363d;
+
+    padding:15px;
+
+}
+
+
+/* ===========================================
+   SIDEBAR
+   =========================================== */
+
+section[data-testid="stSidebar"]{
+
+    background:#161b22;
+
+}
+
+
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3{
+
+    color:white;
+
+}
+
+
+/* ===========================================
+   IMAGENES
+   =========================================== */
+
+img{
+
+    border-radius:12px;
+
+}
+
+/* Logo: conserva la imagen completa incluso en pantallas estrechas. */
+
+.app-logo{
+
+    width:95px;
+    height:95px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+}
+
+.app-logo img{
+
+    width:100%;
+    height:100%;
+    max-width:100%;
+    max-height:100%;
+    object-fit:contain;
+    display:block;
+
+}
+
+
+/* ===========================================
+   ALERTAS
+   =========================================== */
+
+div[data-baseweb="notification"]{
+
+    border-radius:10px;
+
+}
+
+
+/* ===========================================
+   TABLAS
+   =========================================== */
+
+table{
+
+    border-radius:10px;
+
+}
+
+
+/* ===========================================
+   SEPARADOR
+   =========================================== */
+
+hr{
+
+    border:1px solid #30363d;
+
+}
+
+
+/* ===========================================
+   PROGRESS BAR
+   =========================================== */
+
+.stProgress > div > div{
+
+    background:#FFCB05;
+
+}
+
+
+/* ===========================================
+   EXPANDER
+   =========================================== */
+
+details{
+
+    background:#161b22;
+
+    border-radius:10px;
+
+    border:1px solid #30363d;
+
+}
+
+
+/* ===========================================
+   SCROLLBAR
+   =========================================== */
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#0e1117;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#30363d;
+
+    border-radius:20px;
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:#FFCB05;
+
+}
+
+
+/* ===========================================
+   LINKS
+   =========================================== */
+
+a{
+
+    color:#58a6ff;
+
+}
+
+a:hover{
+
+    color:#79c0ff;
+
+}
+
+
+/* ===========================================
+   CAPTION
+   =========================================== */
+
+div[data-testid="stCaptionContainer"]{
+
+    color:#8b949e;
+
+}
+
+
+/* ===========================================
+   DIVIDERS
+   =========================================== */
+
+div[data-testid="stDivider"]{
+
+    margin-top:20px;
+
+    margin-bottom:20px;
+
+}
+
+
+/* ===========================================
+   TARJETAS PERSONALIZADAS
+   =========================================== */
+
+.card{
+
+    background:#161b22;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    border:1px solid #30363d;
+
+    box-shadow:0px 5px 15px rgba(0,0,0,.30);
+
+}
+
+/* ===========================================
+   HEADER PROFESIONAL
+   =========================================== */
+
+.header-container{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:25px;
+
+    background:#161b22;
+
+    border:1px solid #30363d;
+
+    border-radius:18px;
+
+    padding:22px 28px;
+
+    margin-bottom:25px;
+
+    box-shadow:0px 8px 20px rgba(0,0,0,.35);
+
+}
+
+.header-logo{
+
+    width:95px;
+
+    height:95px;
+
+    object-fit:contain;
+
+    flex-shrink:0;
+
+}
+
+.header-info{
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+}
+
+.header-title{
+
+    color:white;
+
+    font-size:46px;
+
+    font-weight:700;
+
+    line-height:1.1;
+
+}
+
+.header-subtitle{
+
+    color:#8b949e;
+
+    font-size:18px;
+
+    margin-top:8px;
+
+}
+
+.header-version{
+
+    color:#FFCB05;
+
+    font-size:15px;
+
+    margin-top:10px;
+
+    font-weight:600;
+
+}

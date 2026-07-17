@@ -1,229 +1,245 @@
-from pathlib import Path
+from vision.mutli_predict import analizar_imagen
 import streamlit as st
+from pathlib import Path
+import sys
 
-from scripts.predict import buscar_cartas
-from database.history import (
-    guardar_busqueda,
-    obtener_historial
-)
 
+# Permitir importar módulos del proyecto
 PROJECT_ROOT = Path(__file__).resolve().parent
 
-DATASET = PROJECT_ROOT / "dataset" / "processed"
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(
+        0,
+        str(PROJECT_ROOT)
+    )
 
-RESULTS = PROJECT_ROOT / "results"
-RESULTS.mkdir(exist_ok=True)
 
-# --------------------------------------------------------
+def cargar_css():
+
+    with open(
+        "assets/style.css"
+    ) as f:
+
+        st.markdown(
+            f"<style>{f.read()}</style>",
+            unsafe_allow_html=True
+        )
+
+
+# =========================
+# Configuración página
+# =========================
 
 st.set_page_config(
-    page_title="Identificador Pokémon",
-    page_icon="🎴",
+    page_title="Pokemon Card AI",
+    page_icon="🃏",
     layout="wide"
 )
 
-st.title("🎴 Identificador de Cartas Pokémon")
+cargar_css()
 
-st.markdown(
-    """
-Identifica cartas Pokémon utilizando **Machine Learning**
-basado en **MobileNetV2** y búsqueda por similitud mediante
-**Embeddings**.
-"""
+col1, col2 = st.columns(
+    [1, 4]
 )
 
-# --------------------------------------------------------
-# Sidebar
-# --------------------------------------------------------
+with col1:
 
-with st.sidebar:
-
-    st.title("🎴 Pokémon Card AI")
-
-    st.divider()
-
-    st.success("Modelo: MobileNetV2")
-
-    st.success("Método: Cosine Similarity")
-
-    st.info(
-        "Sube una imagen y el sistema buscará "
-        "las cartas más parecidas."
+    st.markdown(
+        '''
+        <div class="app-logo">
+            <img src="data:image/png;base64,{}" alt="Pokemon Card AI logo">
+        </div>
+        '''.format(
+            __import__("base64").b64encode(
+                (PROJECT_ROOT / "assets" / "logo.png").read_bytes()
+            ).decode("ascii")
+        ),
+        unsafe_allow_html=True
     )
 
-# --------------------------------------------------------
+with col2:
 
-imagen = st.file_uploader(
-    "Selecciona una imagen",
-    type=["png", "jpg", "jpeg"]
+    st.title(" Pokemon Card AI")
+
+    st.caption(
+        "Reconocimiento automático de cartas Pokémon mediante Computer Vision y Machine Learning"
+    )
+
+    c1, c2, c3, c4 = st.columns(4)
+
+with c1:
+    st.metric(
+        "📦 Cartas",
+        "18.532"
+    )
+
+with c2:
+    st.metric(
+        "🧠 Modelo",
+        "MobileNetV2"
+    )
+
+with c3:
+    st.metric(
+        "⚡ Framework",
+        "TensorFlow"
+    )
+
+with c4:
+    st.metric(
+        "🖥 Interfaz",
+        "Streamlit"
+    )
+
+st.write(
+    "Sistema de reconocimiento de cartas Pokémon utilizando "
+    "Computer Vision y Machine Learning"
 )
 
-# --------------------------------------------------------
 
-if imagen:
+# =========================
+# Carpetas
+# =========================
 
-    ruta_temporal = RESULTS / "temp.png"
+RESULTS = PROJECT_ROOT / "results"
 
-    with open(ruta_temporal, "wb") as f:
-        f.write(imagen.getbuffer())
+UPLOADS = RESULTS / "uploads"
 
-    col1, col2 = st.columns(2)
+UPLOADS.mkdir(
+    parents=True,
+    exist_ok=True
+)
 
-    # ----------------------------------------------------
-    # Imagen subida
-    # ----------------------------------------------------
 
-    with col1:
+# =========================
+# Subida imagen
+# =========================
 
-        st.subheader("📷 Imagen subida")
+archivo = st.file_uploader(
+    "Sube una imagen con cartas Pokémon",
+    type=[
+        "png",
+        "jpg",
+        "jpeg"
+    ]
+)
 
-        st.image(
-            imagen,
-            width=260
+
+if archivo:
+
+    ruta_imagen = UPLOADS / archivo.name
+
+    with open(
+        ruta_imagen,
+        "wb"
+    ) as f:
+
+        f.write(
+            archivo.getbuffer()
         )
 
-    # ----------------------------------------------------
+    st.success(
+        "Imagen cargada correctamente"
+    )
 
-    if st.button(
-        "🔍 Buscar carta",
-        use_container_width=True
+    # Mostrar original
+
+    st.subheader(
+        "Imagen original"
+    )
+
+    st.image(
+        ruta_imagen,
+        width=400
+    )
+
+    # =========================
+    # Ejecutar análisis
+    # =========================
+
+    with st.spinner(
+        "Detectando cartas..."
     ):
 
-        barra = st.progress(
-            0,
-            text="Preparando imagen..."
+        resultados, imagen_detectada = analizar_imagen(
+            ruta_imagen
         )
 
-        barra.progress(
-            20,
-            text="Generando características..."
+    st.success(
+        f"Cartas encontradas: {len(resultados)}"
+    )
+
+    # =========================
+    # Imagen detecciones
+    # =========================
+
+    st.subheader(
+        "Detecciones"
+    )
+
+    st.image(
+        imagen_detectada,
+        width=700
+    )
+
+    # =========================
+    # Resultados
+    # =========================
+
+    st.subheader(
+        "Resultados"
+    )
+
+    for carta in resultados:
+
+        st.divider()
+
+        st.markdown(
+            f"""
+            ## 🃏 Carta #{carta['id']}
+            """
         )
 
-        resultados = buscar_cartas(
-            ruta_temporal
+        col1, col2 = st.columns(
+            [1, 2]
         )
 
-        barra.progress(
-            70,
-            text="Buscando coincidencias..."
-        )
+        with col1:
 
-        guardar_busqueda(
-            resultados[0]["carta"],
-            resultados[0]["set"],
-            resultados[0]["similitud"]
-        )
-
-        barra.progress(
-            100,
-            text="Proceso finalizado"
-        )
-
-        barra.empty()
-
-        st.success("Carta encontrada correctamente.")
-
-        # ==================================================
-        # Resultado
-        # ==================================================
+            st.image(
+                carta["ruta"],
+                width=180
+            )
 
         with col2:
 
-            mejor = resultados[0]
-
-            st.subheader("🏆 Mejor coincidencia")
-
-            ruta_imagen = (
-                DATASET /
-                mejor["archivo"]
-            )
-
-            if ruta_imagen.exists():
-
-                st.image(
-                    str(ruta_imagen),
-                    width=180
-                )
-
-            colA, colB = st.columns(2)
-
-            with colA:
-
-                st.metric(
-                    "Similitud",
-                    f"{mejor['similitud']:.2f}%"
-                )
-
-            with colB:
-
-                st.metric(
-                    "Código",
-                    mejor["codigo"]
-                )
+            mejor = carta[
+                "coincidencias"
+            ][0]
 
             st.write(
-                f"### {mejor['carta']}"
+                f"**Carta:** {mejor['carta']}"
             )
 
             st.write(
                 f"**Set:** {mejor['set']}"
             )
 
-            st.divider()
-
-            st.subheader(
-                "📋 Otras coincidencias"
+            st.write(
+                f"**Código:** {mejor['codigo']}"
             )
 
-            for carta in resultados[1:]:
-
-                with st.container(border=True):
-
-                    c1, c2 = st.columns([3, 1])
-
-                    with c1:
-
-                        st.write(
-                            f"**{carta['carta']}**"
-                        )
-
-                        st.caption(
-                            f"Set: {carta['set']}"
-                        )
-
-                        st.caption(
-                            f"Código: {carta['codigo']}"
-                        )
-
-                    with c2:
-
-                        st.metric(
-                            "Match",
-                            f"{carta['similitud']:.2f}%"
-                        )
-
-        # ==================================================
-        # Historial
-        # ==================================================
-
-        st.divider()
-
-        st.subheader(
-            "📜 Historial de búsquedas"
-        )
-
-        historial = obtener_historial()
-
-        if historial:
-
-            st.dataframe(
-                historial,
-                use_container_width=True,
-                hide_index=True
+            st.write(
+                f"**Similitud:** {mejor['similitud']:.2f}%"
             )
 
-        else:
-
-            st.info(
-                "Todavía no existen búsquedas."
+            st.write(
+                "Top 5 coincidencias"
             )
+
+            for resultado in carta["coincidencias"]:
+
+                st.write(
+                    f"- {resultado['carta']} "
+                    f"({resultado['similitud']:.2f}%)"
+                )
