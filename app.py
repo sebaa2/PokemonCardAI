@@ -2,7 +2,7 @@ from vision.mutli_predict import analizar_imagen
 import streamlit as st
 from pathlib import Path
 import sys
-
+import json
 
 # Permitir importar módulos del proyecto
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -12,6 +12,21 @@ if str(PROJECT_ROOT) not in sys.path:
         0,
         str(PROJECT_ROOT)
     )
+
+
+def obtener_total_cartas():
+    try:
+        with open(
+            "dataset/embeddings/processed_index.json",
+            "r",
+            encoding="utf-8"
+        ) as f:
+            index = json.load(f)
+
+        return len(index)
+
+    except FileNotFoundError:
+        return 0
 
 
 def cargar_css():
@@ -70,7 +85,7 @@ with col2:
 with c1:
     st.metric(
         "📦 Cartas",
-        "18.532"
+        f"{obtener_total_cartas():,}".replace(",", ".")
     )
 
 with c2:
@@ -232,6 +247,14 @@ if archivo:
             st.write(
                 f"**Similitud:** {mejor['similitud']:.2f}%"
             )
+
+            if mejor["similitud"] < 70:
+
+                st.toast(
+                    "Resultado no seguro: la coincidencia es menor al 70%. "
+                    "Verifica la carta manualmente.",
+                    icon="⚠️"
+                )
 
             st.write(
                 "Top 5 coincidencias"
