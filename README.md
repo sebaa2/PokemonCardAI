@@ -1,25 +1,20 @@
-# 🎴 Pokémon Card AI
+# Pokémon Card AI
 
-Sistema de reconocimiento de cartas Pokémon mediante **Machine Learning** y **Computer Vision**, desarrollado en **Python**. El proyecto utiliza **Transfer Learning con MobileNetV2** para generar embeddings de las imágenes y encontrar la carta más similar mediante **Cosine Similarity**.
-
-La aplicación cuenta con una interfaz web desarrollada con **Streamlit**, permitiendo cargar imágenes, visualizar los resultados y almacenar el historial de búsquedas.
+Aplicación web para identificar cartas Pokémon a partir de una fotografía. Combina visión computacional para detectar una o varias cartas en la imagen y *transfer learning* con MobileNetV2 para encontrar las coincidencias más similares en un índice local.
 
 ---
 
-## ⚠️ Aviso
-
-Este proyecto utiliza un dataset de cartas Pokémon obtenido desde Kaggle. Las imágenes y marcas comerciales pertenecen a sus respectivos propietarios y se utilizan únicamente con fines educativos y de investigación.
+> Proyecto educativo. Las imágenes, nombres y marcas de Pokémon pertenecen a sus respectivos propietarios.
 
 ## 📌 Características
 
-- 🎴 Identificación automática de cartas Pokémon.
-- 🧠 Modelo basado en MobileNetV2 (Transfer Learning).
-- 📊 Comparación mediante Cosine Similarity.
-- 🏆 Muestra las 5 cartas más similares.
-- 🖥️ Interfaz web desarrollada con Streamlit.
-- 💾 Historial de búsquedas utilizando SQLite.
-- 📷 Vista previa de la imagen analizada.
-- ⚡ Actualización incremental de embeddings al agregar nuevas cartas.
+- Detecta una o varias cartas en una misma fotografía.
+- Genera embeddings con MobileNetV2 y compara mediante similitud del coseno.
+- Muestra las cinco coincidencias más cercanas por cada carta detectada.
+- Indica el nivel de confianza de cada coincidencia.
+- Guarda las búsquedas en una base de datos SQLite local.
+- Incluye un panel de historial con métricas, filtros, gráficos y exportación a CSV.
+- Permite actualizar el índice de embeddings al incorporar cartas nuevas.
 
 ---
 
