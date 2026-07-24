@@ -178,7 +178,7 @@ python scripts/check_dataset.py
 
 ## Historial
 
-> Agregar captura del historial de búsquedas.
+<img width="1442" height="649" alt="image" src="https://github.com/user-attachments/assets/a771f9c6-60fe-489f-90e1-0780fbb82bf7" />
 
 ---
 
