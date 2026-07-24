@@ -29,4 +29,4 @@ def analizar_imagen(ruta_imagen, top=5):
             "coincidencias": coincidencias
         })
 
-        return resultados, imagen_detectada
+    return resultados, imagen_detectada
