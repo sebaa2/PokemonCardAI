@@ -172,8 +172,6 @@ python scripts/check_dataset.py
 
 > Agregar captura mostrando la mejor coincidencia y el Top 5.
 
-<img width="1242" height="586" alt="image" src="https://github.com/user-attachments/assets/5f3e1d31-a0fc-4df4-bd10-6c758e8865df" />
-
 <img width="1242" height="586" alt="image" src="https://github.com/user-attachments/assets/1ff6b24d-f62c-4c2e-955e-6adb45ba636f" />
 
 ---
