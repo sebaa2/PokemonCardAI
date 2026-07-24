@@ -164,7 +164,7 @@ python scripts/check_dataset.py
 
 ## Pantalla principal
 
-> Agregar captura de la aplicación.
+<img width="1454" height="833" alt="image" src="https://github.com/user-attachments/assets/65e5224c-fb0f-4e1b-8503-01c11e617d53" />
 
 ---
 
