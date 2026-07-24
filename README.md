@@ -164,7 +164,7 @@ python scripts/check_dataset.py
 
 ## Pantalla principal
 
-> Agregar captura de la aplicación.
+<img width="1454" height="833" alt="image" src="https://github.com/user-attachments/assets/65e5224c-fb0f-4e1b-8503-01c11e617d53" />
 
 ---
 
@@ -172,11 +172,13 @@ python scripts/check_dataset.py
 
 > Agregar captura mostrando la mejor coincidencia y el Top 5.
 
+<img width="1242" height="586" alt="image" src="https://github.com/user-attachments/assets/1ff6b24d-f62c-4c2e-955e-6adb45ba636f" />
+
 ---
 
 ## Historial
 
-> Agregar captura del historial de búsquedas.
+<img width="1442" height="649" alt="image" src="https://github.com/user-attachments/assets/a771f9c6-60fe-489f-90e1-0780fbb82bf7" />
 
 ---
 
